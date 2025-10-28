@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import List, Optional, Union
 import yaml
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, field_serializer
 from pygeodesy.ellipsoidalKarney import LatLon
 
 
@@ -13,7 +13,10 @@ class CoordinateError(BaseModel):
     mean: float = Field(..., description='Mean error (meters)')
     std_dev: float = Field(..., ge=0, description='Standard deviation (meters)')
 
-    model_config = {"json_encoders": {float: lambda v: round(v, 6)}}
+    @field_serializer('mean', 'std_dev')
+    def serialize_float_6(self, value: float) -> float:
+        """Serialize float values with 6 decimal places."""
+        return round(value, 6)
 
 
 class CoordinateErrors(BaseModel):
@@ -69,7 +72,10 @@ class Waypoint(BaseModel):
     up: float = Field(..., description='Up coordinate (meters)')
     speed: Optional[float] = Field(None, ge=0, description='Speed (m/s)')
 
-    model_config = {"json_encoders": {float: lambda v: round(v, 3)}}
+    @field_serializer('east', 'north', 'up', 'speed')
+    def serialize_float_3(self, value: Optional[float]) -> Optional[float]:
+        """Serialize float values with 3 decimal places."""
+        return round(value, 3) if value is not None else None
 
 
 class ObjectConfig(BaseModel):
@@ -78,7 +84,7 @@ class ObjectConfig(BaseModel):
     id: Union[str, List[str]] = Field(..., description='Object identifier(s)')
     defaults: Optional[Defaults] = Field(None, description='Object defaults')
     start_delay: float = Field(default=0.0, ge=0, description='Start delay (s)')
-    waypoints: List[Waypoint] = Field(..., min_items=1, description='Waypoints in ENU')
+    waypoints: List[Waypoint] = Field(..., min_length=1, description='Waypoints in ENU')
     circular: bool = Field(default=False, description='Enable circular route')
 
     @field_validator('id')
@@ -94,14 +100,14 @@ class OriginConfig(BaseModel):
     """Origin configuration section."""
 
     defaults: Optional[Defaults] = Field(None, description='Origin defaults')
-    objects: List[ObjectConfig] = Field(..., min_items=1, description='Objects in origin')
+    objects: List[ObjectConfig] = Field(..., min_length=1, description='Objects in origin')
 
 
 class Config(BaseModel):
     """Main configuration model."""
 
     general: GeneralConfig = Field(..., description='General configuration')
-    origins: List[OriginConfig] = Field(..., min_items=1, description='Origins configuration')
+    origins: List[OriginConfig] = Field(..., min_length=1, description='Origins configuration')
 
     @classmethod
     def from_file(cls, file_path: Union[str, Path]) -> 'Config':
