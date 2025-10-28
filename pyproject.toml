@@ -1,7 +1,36 @@
 [project]
 name = "fvcgen"
 version = "0.1.0"
-description = "Add your description here"
+description = "Scenario generator for UAS ground-based traffic management systems"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "click>=8.0.0",
+    "rich>=13.0.0",
+    "pygeodesy>=23.0.0",
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "flake8>=6.0.0",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.scripts]
+fvcgen = "fvc.gen.cli:main"
+
+[tool.uv]
+package = true
+
+[tool.ruff]
+line-length = 160
+target-version = "py313"
+
+[tool.ruff.format]
+quote-style = "single"
