@@ -25,19 +25,14 @@ class CoordinateTransformer:
         x, y, z = east, north, up
 
         # Convert to geographic coordinates
-        latlon = self.local_cartesian.to_latlon(x, y, z)
-
+        latlon = self.local_cartesian.reverse(x, y, z)
         return latlon.lat, latlon.lon, latlon.height
 
     def geographic_to_enu(self, lat: float, lon: float, alt: float) -> Tuple[float, float, float]:
         """Convert geographic coordinates to ENU."""
         latlon = LatLon(lat, lon, height=alt)
-        x, y, z = self.local_cartesian.to_local(latlon)
-
-        # Convert from local cartesian to ENU
-        east, north, up = x, y, z
-
-        return east, north, up
+        local = self.local_cartesian.forward(latlon)
+        return local.x, local.y, local.z
 
     def waypoint_to_geographic(self, waypoint: Waypoint) -> Tuple[float, float, float]:
         """Convert waypoint ENU coordinates to geographic."""
