@@ -1,4 +1,4 @@
-# Flight Scenario Generator
+# Flyvercity Flight Scenario Generator
 
 A tool for generating flight scenarios for UAS (Unmanned Aircraft Systems) ground-based traffic management systems. The tool uses Flyvercity Common Format (`fvc`).
 
@@ -11,12 +11,6 @@ A tool for generating flight scenarios for UAS (Unmanned Aircraft Systems) groun
 - **Coordinate errors**: Configurable statistical errors for realistic simulation
 - **Circular routes**: Support for closed-loop flight paths
 - **Rich CLI**: Beautiful command-line interface with progress bars and colored output
-
-## Development Environment
-
-```bash
-uv sync
-```
 
 ## Quick Start
 
