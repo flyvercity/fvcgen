@@ -3,7 +3,7 @@
 import numpy as np
 from typing import Tuple
 from pygeodesy import LocalCartesian
-from pygeodesy.ellipsoidalVincenty import LatLon as LatLonVincenty
+from pygeodesy.ellipsoidalVincenty import LatLon
 
 from .config import BasePoint, Waypoint
 
@@ -25,14 +25,14 @@ class CoordinateTransformer:
         x, y, z = east, north, up
 
         # Convert to geographic coordinates
-        latlon = self.local_cartesian.toLatLon(x, y, z)
+        latlon = self.local_cartesian.to_latlon(x, y, z)
 
         return latlon.lat, latlon.lon, latlon.height
 
     def geographic_to_enu(self, lat: float, lon: float, alt: float) -> Tuple[float, float, float]:
         """Convert geographic coordinates to ENU."""
-        latlon = LatLonVincenty(lat, lon, height=alt)
-        x, y, z = self.local_cartesian.toLocal(latlon)
+        latlon = LatLon(lat, lon, height=alt)
+        x, y, z = self.local_cartesian.to_local(latlon)
 
         # Convert from local cartesian to ENU
         east, north, up = x, y, z
@@ -50,8 +50,8 @@ class CoordinateTransformer:
         lat2, lon2, alt2 = self.waypoint_to_geographic(to_waypoint)
 
         # Create LatLon objects
-        point1 = LatLonVincenty(lat1, lon1, height=alt1)
-        point2 = LatLonVincenty(lat2, lon2, height=alt2)
+        point1 = LatLon(lat1, lon1, height=alt1)
+        point2 = LatLon(lat2, lon2, height=alt2)
 
         # Calculate distance and bearing
         distance = point1.distanceTo(point2)
