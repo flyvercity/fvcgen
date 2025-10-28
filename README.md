@@ -1,6 +1,6 @@
-# FVC Generator
+# Flight Scenario Generator
 
-A tool for generating FVC (Flight Vehicle Coordinates) scenarios for UAS (Unmanned Aircraft Systems) ground-based traffic management systems.
+A tool for generating flight scenarios for UAS (Unmanned Aircraft Systems) ground-based traffic management systems. The tool uses Flyvercity Common Format (`fvc`).
 
 ## Features
 
@@ -12,21 +12,17 @@ A tool for generating FVC (Flight Vehicle Coordinates) scenarios for UAS (Unmann
 - **Circular routes**: Support for closed-loop flight paths
 - **Rich CLI**: Beautiful command-line interface with progress bars and colored output
 
-## Installation
+## Development Environment
 
 ```bash
-# Install in development mode
-pip install -e .
-
-# Or install with development dependencies
-pip install -e ".[dev]"
+uv sync
 ```
 
 ## Quick Start
 
 1. **Generate a configuration template**:
    ```bash
-   fvcgen template -o my_scenario.yaml
+   uv run fvcgen template -o my_scenario.yaml
    ```
 
 2. **Edit the configuration file** to define your scenario:
@@ -36,12 +32,12 @@ pip install -e ".[dev]"
 
 3. **Generate the FVC scenario**:
    ```bash
-   fvcgen generate -c my_scenario.yaml -o scenario.fvc
+   uv run fvcgen generate -c my_scenario.yaml -o scenario.fvc
    ```
 
 4. **Validate your configuration**:
    ```bash
-   fvcgen validate -c my_scenario.yaml
+   uv run fvcgen validate -c my_scenario.yaml
    ```
 
 ## Configuration Format
@@ -75,26 +71,26 @@ origins:
         circular: true
 ```
 
-## Command Line Interface
+## Command Line Interface (Development Environment)
 
 ### Generate FVC scenario
 ```bash
-fvcgen generate -c config.yaml -o output.fvc
+uv run fvcgen generate -c config.yaml -o output.fvc
 ```
 
 ### Generate configuration template
 ```bash
-fvcgen template -o template.yaml
+uv run fvcgen template -o template.yaml
 ```
 
 ### Validate configuration
 ```bash
-fvcgen validate -c config.yaml
+uv run fvcgen validate -c config.yaml
 ```
 
 ### Stream output to stdout
 ```bash
-fvcgen generate -c config.yaml --stream
+uv run fvcgen generate -c config.yaml --stream
 ```
 
 ## Development
@@ -107,12 +103,12 @@ fvcgen generate -c config.yaml --stream
 
 ### Running Tests
 ```bash
-pytest
+uv run pytest
 ```
 
 ### Building
 ```bash
-python -m build
+uv run build
 ```
 
 ## Architecture
@@ -122,7 +118,3 @@ python -m build
 - **Geodesy**: pygeodesy for accurate coordinate transformations
 - **Kinematics**: Custom kinematic equations for object movement
 - **Generation**: FVC file format generation with error simulation
-
-## License
-
-This project is part of the FlyverCity ecosystem.
