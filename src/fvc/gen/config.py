@@ -108,6 +108,7 @@ class Config(BaseModel):
 
     general: GeneralConfig = Field(..., description='General configuration')
     origins: List[OriginConfig] = Field(..., min_length=1, description='Origins configuration')
+    source_path: Optional[str] = Field(default=None, exclude=True, description='Path to the configuration file (internal)')
 
     @classmethod
     def from_file(cls, file_path: Union[str, Path]) -> 'Config':
@@ -119,7 +120,10 @@ class Config(BaseModel):
         with open(path, 'r', encoding='utf-8') as f:
             data = yaml.safe_load(f)
 
-        return cls.model_validate(data)
+        config = cls.model_validate(data)
+        # Store source path for later use (e.g., metadata origin field)
+        config.source_path = str(path)
+        return config
 
     def to_file(self, file_path: Union[str, Path]) -> None:
         """Save configuration to YAML file."""
