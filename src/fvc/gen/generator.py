@@ -57,10 +57,17 @@ class FVCGenerator:
         # Write FVC header
         self._write_header(output)
 
-        # Generate and write trajectories for all objects
+        # Generate records for all objects first, then emit in chronological order
+        all_records = []
         for origin_idx, origin in enumerate(self.config.origins):
             for obj_idx, obj_config in enumerate(origin.objects):
-                self._write_object_trajectory(output, origin_idx, obj_idx, obj_config)
+                all_records.extend(self._generate_object_records(origin_idx, obj_idx, obj_config))
+
+        # Sort by time to simulate natural flow of time
+        all_records.sort(key=lambda r: r['time']['unix'])
+
+        for record in all_records:
+            output.write(json.dumps(record) + '\n')
 
     def _write_header(self, output: TextIO) -> None:
         """Write FVC file metadata record."""
@@ -77,8 +84,8 @@ class FVCGenerator:
         }
         output.write(json.dumps(metadata) + '\n')
 
-    def _write_object_trajectory(self, output: TextIO, origin_idx: int, obj_idx: int, obj_config: ObjectConfig) -> None:
-        """Write trajectory data for a single object."""
+    def _generate_object_records(self, origin_idx: int, obj_idx: int, obj_config: ObjectConfig) -> list[dict]:
+        """Generate trajectory records for a single object."""
         # Get effective defaults for this object
         defaults = self.config.get_object_defaults(origin_idx, obj_idx)
 
@@ -87,9 +94,9 @@ class FVCGenerator:
 
         if not trajectory:
             console.print(f'[yellow]Warning: No trajectory generated for object {obj_config.id}[/yellow]')
-            return
+            return []
 
-        # Write trajectory data
+        records: list[dict] = []
         for position in trajectory:
             # Convert ENU to geographic coordinates
             lat, lon, alt = self.transformer.enu_to_geographic(position.east, position.north, position.up)
@@ -97,7 +104,7 @@ class FVCGenerator:
             # Add coordinate errors
             lat, lon, alt = self._add_coordinate_errors(lat, lon, alt, defaults.coordinate_errors)
 
-            # Write data line for each object ID
+            # Create data line for each object ID
             for obj_id in obj_config.id:
                 record = {
                     'time': {'unix': int(position.time * 1000)},
@@ -110,7 +117,9 @@ class FVCGenerator:
                         }
                     }
                 }
-                output.write(json.dumps(record) + '\n')
+                records.append(record)
+
+        return records
 
     def _add_coordinate_errors(self, lat: float, lon: float, alt: float, coordinate_errors) -> tuple[float, float, float]:
         """Add coordinate errors to geographic coordinates."""
