@@ -27,6 +27,21 @@ class CoordinateErrors(BaseModel):
     up: CoordinateError = Field(..., description='Up axis error')
 
 
+class PartialCoordinateError(BaseModel):
+    """Partial override for CoordinateError."""
+
+    mean: Optional[float] = Field(None, description='Mean error (meters)')
+    std_dev: Optional[float] = Field(None, ge=0, description='Standard deviation (meters)')
+
+
+class PartialCoordinateErrors(BaseModel):
+    """Partial override for CoordinateErrors."""
+
+    east: Optional[PartialCoordinateError] = None
+    north: Optional[PartialCoordinateError] = None
+    up: Optional[PartialCoordinateError] = None
+
+
 class Defaults(BaseModel):
     """Default values for objects."""
 
@@ -34,6 +49,15 @@ class Defaults(BaseModel):
     altitude: float = Field(..., description='Default altitude (meters)')
     coordinate_errors: CoordinateErrors = Field(..., description='Coordinate determination errors')
     time_step: float = Field(..., gt=0, description='Time step (seconds)')
+
+
+class PartialDefaults(BaseModel):
+    """Partial override for Defaults, all fields optional."""
+
+    speed: Optional[float] = Field(None, ge=0, description='Default speed (m/s)')
+    altitude: Optional[float] = Field(None, description='Default altitude (meters)')
+    coordinate_errors: Optional[PartialCoordinateErrors] = Field(None, description='Coordinate determination errors')
+    time_step: Optional[float] = Field(None, gt=0, description='Time step (seconds)')
 
 
 class BasePoint(BaseModel):
@@ -61,7 +85,7 @@ class GeneralConfig(BaseModel):
 
     base_point: BasePoint = Field(..., description='Geographic base point')
     defaults: Defaults = Field(..., description='Default values')
-    output_file: Optional[str] = Field(None, description='Output file path')
+    include_origin: bool = Field(default=False, description='Include origin index in each emitted record')
 
 
 class Waypoint(BaseModel):
@@ -82,7 +106,7 @@ class ObjectConfig(BaseModel):
     """Object configuration."""
 
     id: Union[str, List[str]] = Field(..., description='Object identifier(s)')
-    defaults: Optional[Defaults] = Field(None, description='Object defaults')
+    defaults: Optional[PartialDefaults] = Field(None, description='Object defaults (partial)')
     start_delay: float = Field(default=0.0, ge=0, description='Start delay (s)')
     waypoints: List[Waypoint] = Field(..., min_length=1, description='Waypoints in ENU')
     circular: bool = Field(default=False, description='Enable circular route')
@@ -99,7 +123,8 @@ class ObjectConfig(BaseModel):
 class OriginConfig(BaseModel):
     """Origin configuration section."""
 
-    defaults: Optional[Defaults] = Field(None, description='Origin defaults')
+    name: str = Field(..., min_length=1, description='Origin name')
+    defaults: Optional[PartialDefaults] = Field(None, description='Origin defaults (partial)')
     objects: List[ObjectConfig] = Field(..., min_length=1, description='Objects in origin')
 
 
@@ -134,19 +159,49 @@ class Config(BaseModel):
             yaml.dump(self.model_dump(), f, default_flow_style=False, indent=2, sort_keys=False)
 
     def get_object_defaults(self, origin_idx: int, object_idx: int) -> Defaults:
-        """Get effective defaults for an object."""
+        """Get effective defaults for an object via deep merge of partial overrides."""
         obj = self.origins[origin_idx].objects[object_idx]
         origin = self.origins[origin_idx]
 
-        # Start with general defaults
-        defaults = self.general.defaults
+        # Start with general defaults (full Defaults model)
+        effective = self.general.defaults
 
-        # Override with origin defaults if available
+        # Apply origin partial overrides
         if origin.defaults:
-            defaults = defaults.model_copy(update=origin.defaults.model_dump(exclude_unset=True))
+            effective = deep_merge_defaults(effective, origin.defaults)
 
-        # Override with object defaults if available
+        # Apply object partial overrides
         if obj.defaults:
-            defaults = defaults.model_copy(update=obj.defaults.model_dump(exclude_unset=True))
+            effective = deep_merge_defaults(effective, obj.defaults)
 
-        return defaults
+        return effective
+
+
+def deep_merge_defaults(base: Defaults, override: PartialDefaults) -> Defaults:
+    """Deep-merge a PartialDefaults into Defaults, returning a new Defaults.
+
+    - Scalars replace if provided
+    - coordinate_errors merges per-axis and within axis
+    """
+    speed = override.speed if override.speed is not None else base.speed
+    altitude = override.altitude if override.altitude is not None else base.altitude
+    time_step = override.time_step if override.time_step is not None else base.time_step
+
+    # Merge coordinate errors
+    ce = base.coordinate_errors
+    o_ce = override.coordinate_errors
+
+    def merge_axis(base_axis: CoordinateError, override_axis: Optional[PartialCoordinateError]) -> CoordinateError:
+        if override_axis is None:
+            return base_axis
+        mean = override_axis.mean if override_axis.mean is not None else base_axis.mean
+        std_dev = override_axis.std_dev if override_axis.std_dev is not None else base_axis.std_dev
+        return CoordinateError(mean=mean, std_dev=std_dev)
+
+    east = merge_axis(ce.east, o_ce.east if o_ce else None)
+    north = merge_axis(ce.north, o_ce.north if o_ce else None)
+    up = merge_axis(ce.up, o_ce.up if o_ce else None)
+
+    merged_ce = CoordinateErrors(east=east, north=north, up=up)
+
+    return Defaults(speed=speed, altitude=altitude, coordinate_errors=merged_ce, time_step=time_step)

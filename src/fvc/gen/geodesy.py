@@ -22,6 +22,8 @@ class CoordinateTransformer:
         # Convert ENU to local cartesian (x, y, z)
         # ENU: East=X, North=Y, Up=Z
         # LocalCartesian: X=East, Y=North, Z=Up
+        # Note: LocalCartesian is anchored at the base point, including its altitude;
+        # 'up' here is a vertical offset relative to that base altitude.
         x, y, z = east, north, up
 
         # Convert to geographic coordinates

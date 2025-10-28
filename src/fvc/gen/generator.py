@@ -25,10 +25,8 @@ class FVCGenerator:
         self.error_generator = CoordinateErrorGenerator()
         self.trajectory_generator = TrajectoryGenerator(movement_type)
 
-    def generate(self) -> None:
-        """Generate FVC file and save to output path."""
-        output_path = self.config.general.output_file
-
+    def generate(self, output_path: str | None) -> None:
+        """Generate FVC file and save to output path if provided, else stdout."""
         if output_path:
             self._generate_to_file(output_path)
         else:
@@ -117,6 +115,8 @@ class FVCGenerator:
                         }
                     }
                 }
+                if self.config.general.include_origin:
+                    record['origin'] = self.config.origins[origin_idx].name
                 records.append(record)
 
         return records

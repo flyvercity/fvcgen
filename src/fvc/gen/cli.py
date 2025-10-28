@@ -27,7 +27,7 @@ def main(ctx, verbose):
     '--config', '-c', 'config_path',
     required=True, help='Path to configuration file'
 )
-@click.option('--output', '-o', help='Output file path (overrides config)')
+@click.option('--output', '-o', help='Output file path')
 @click.option(
     '--stream', is_flag=True, help='Enable streaming output to stdout'
 )
@@ -46,10 +46,6 @@ def generate(ctx, config_path, output, stream):
             config = Config.from_file(config_path)
             progress.update(task, description='Configuration loaded')
 
-            # Override output path if provided
-            if output:
-                config.general.output_file = output
-
             # Generate FVC
             generator = FVCGenerator(config)
             progress.update(task, description='Generating FVC scenario...')
@@ -57,7 +53,7 @@ def generate(ctx, config_path, output, stream):
             if stream:
                 generator.generate_stream()
             else:
-                generator.generate()
+                generator.generate(output)
                 progress.update(task, description='FVC scenario generated successfully')
 
     except Exception as e:
@@ -101,7 +97,7 @@ def validate(config_path):
         table.add_row('General', 'Default Speed', f'{config.general.defaults.speed} m/s')
         table.add_row('General', 'Default Altitude', f'{config.general.defaults.altitude} m')
         table.add_row('General', 'Time Step', f'{config.general.defaults.time_step} s')
-        table.add_row('General', 'Output File', config.general.output_file or 'stdout')
+        table.add_row('General', 'Output File', 'provided via CLI or stdout')
 
         # Origins count
         origins_count = len(config.origins)
