@@ -1,4 +1,4 @@
-# FVC Generator Specification
+# Flight Scenario Generator Specification
 
 ## Overview
 The Scenario Generator (hereinafter Generator) should create FVC files for objects according to a configuration file.
@@ -50,6 +50,17 @@ Provide the ability to generate a configuration file template in command line pa
 
 ### 7. Streaming Output (Optional)
 Make streaming data output for transmission to fusion.
+
+## Output Format
+
+* The output file should be in Flyvercity Common Format (`fvc`), based on jsonlines format.
+* The first string should be the metadata record: `{"origin": "example.csv", "content": "flightlog", "source": "fvcgen"}`
+* For each simulation step, and for each object, a new record should be added to the file.
+* The record should contain the following fields:
+  * time
+  * uaid
+  * pos
+* Each record shall match the schema specified here: https://github.com/flyvercity/fvctools/blob/main/src/fvc/tools/df/schema.yaml
 
 ## Technical Implementation Notes
 
