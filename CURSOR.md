@@ -3,8 +3,9 @@
 * Make all uncertain fragments with `[REFINE]` tags
 * Be extra careful with the geodesy and timing aspects of the code as they are critical for the accuracy of the generated scenarios.
 
-# Python Code Generation
+# Python
 
+* Use `uv` to manage the project and run the application and scripts.
 * Use `ruff` for formatting
 * Use `flake8` for linting
 

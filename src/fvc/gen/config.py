@@ -3,8 +3,8 @@
 from pathlib import Path
 from typing import List, Optional, Union
 import yaml
-from pydantic import BaseModel, Field, validator
-from pygeodesy import LatLon
+from pydantic import BaseModel, Field, field_validator
+from pygeodesy.ellipsoidalKarney import LatLon
 
 
 class CoordinateError(BaseModel):
@@ -13,8 +13,7 @@ class CoordinateError(BaseModel):
     mean: float = Field(..., description='Mean error (meters)')
     std_dev: float = Field(..., ge=0, description='Standard deviation (meters)')
 
-    class Config:
-        json_encoders = {float: lambda v: round(v, 6)}
+    model_config = {"json_encoders": {float: lambda v: round(v, 6)}}
 
 
 class CoordinateErrors(BaseModel):
@@ -41,7 +40,8 @@ class BasePoint(BaseModel):
     lon: float = Field(..., ge=-180, le=180, description='Longitude (degrees)')
     alt: float = Field(default=0.0, description='Altitude (meters)')
 
-    @validator('lat', 'lon')
+    @field_validator('lat', 'lon')
+    @classmethod
     def validate_coordinates(cls, v):
         """Validate coordinate values."""
         if not isinstance(v, (int, float)):
@@ -69,8 +69,7 @@ class Waypoint(BaseModel):
     up: float = Field(..., description='Up coordinate (meters)')
     speed: Optional[float] = Field(None, ge=0, description='Speed (m/s)')
 
-    class Config:
-        json_encoders = {float: lambda v: round(v, 3)}
+    model_config = {"json_encoders": {float: lambda v: round(v, 3)}}
 
 
 class ObjectConfig(BaseModel):
@@ -82,7 +81,8 @@ class ObjectConfig(BaseModel):
     waypoints: List[Waypoint] = Field(..., min_items=1, description='Waypoints in ENU')
     circular: bool = Field(default=False, description='Enable circular route')
 
-    @validator('id')
+    @field_validator('id')
+    @classmethod
     def validate_id(cls, v):
         """Ensure id is always a list."""
         if isinstance(v, str):
@@ -113,7 +113,7 @@ class Config(BaseModel):
         with open(path, 'r', encoding='utf-8') as f:
             data = yaml.safe_load(f)
 
-        return cls(**data)
+        return cls.model_validate(data)
 
     def to_file(self, file_path: Union[str, Path]) -> None:
         """Save configuration to YAML file."""
@@ -121,7 +121,7 @@ class Config(BaseModel):
         path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(path, 'w', encoding='utf-8') as f:
-            yaml.dump(self.dict(), f, default_flow_style=False, indent=2, sort_keys=False)
+            yaml.dump(self.model_dump(), f, default_flow_style=False, indent=2, sort_keys=False)
 
     def get_object_defaults(self, origin_idx: int, object_idx: int) -> Defaults:
         """Get effective defaults for an object."""
@@ -133,10 +133,10 @@ class Config(BaseModel):
 
         # Override with origin defaults if available
         if origin.defaults:
-            defaults = defaults.copy(update=origin.defaults.dict(exclude_unset=True))
+            defaults = defaults.model_copy(update=origin.defaults.model_dump(exclude_unset=True))
 
         # Override with object defaults if available
         if obj.defaults:
-            defaults = defaults.copy(update=obj.defaults.dict(exclude_unset=True))
+            defaults = defaults.model_copy(update=obj.defaults.model_dump(exclude_unset=True))
 
         return defaults
