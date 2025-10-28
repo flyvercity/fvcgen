@@ -100,12 +100,14 @@ class FVCGenerator:
             # Write data line for each object ID
             for obj_id in obj_config.id:
                 record = {
-                    'time': position.time,
-                    'uaid': obj_id,
+                    'time': {'unix': int(position.time * 1000)},
+                    'uaid': {'int': obj_id},
                     'pos': {
-                        'lat': lat,
-                        'lon': lon,
-                        'alt': alt
+                        'loc': {
+                            'lat': lat,
+                            'lon': lon,
+                            'alt': alt
+                        }
                     }
                 }
                 output.write(json.dumps(record) + '\n')
