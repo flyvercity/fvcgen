@@ -1,5 +1,6 @@
 """Command-line interface for FVC Generator."""
 
+import logging
 import click
 from rich.console import Console
 from rich.table import Table
@@ -12,6 +13,16 @@ from .utils import generate_config_template
 console = Console()
 
 
+def setup_logging(verbose: bool = False):
+    """Configure logging based on verbosity level."""
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+
 @click.group()
 @click.version_option()
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
@@ -20,6 +31,7 @@ def main(ctx, verbose):
     """FVC Generator - Generate FVC scenarios for UAS traffic management."""
     ctx.ensure_object(dict)
     ctx.obj['verbose'] = verbose
+    setup_logging(verbose)
 
 
 @main.command()

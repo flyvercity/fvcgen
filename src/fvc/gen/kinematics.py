@@ -1,11 +1,14 @@
 """Kinematic equations for object movement simulation."""
 
+import logging
 import numpy as np
 from typing import List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
 from .config import Waypoint, ObjectConfig, Defaults
+
+logger = logging.getLogger(__name__)
 
 
 class MovementType(Enum):
@@ -47,7 +50,7 @@ class KinematicCalculator:
         """Initialize kinematic calculator."""
         self.movement_type = movement_type
 
-    def calculate_segments(self, waypoints: List[Waypoint], start_delay: float, time_step: float, circular: bool = False) -> List[MovementSegment]:
+    def calculate_segments(self, waypoints: List[Waypoint], start_delay: float, time_step: float, default_speed: float, circular: bool = False) -> List[MovementSegment]:
         """Calculate movement segments from waypoints."""
         if len(waypoints) < 2:
             raise ValueError('At least 2 waypoints required')
@@ -68,8 +71,9 @@ class KinematicCalculator:
             distance = self._calculate_distance(start_wp, end_wp)
             heading = self._calculate_heading(start_wp, end_wp)
 
-            # Use waypoint speed or default speed
-            speed = end_wp.speed if end_wp.speed is not None else start_wp.speed
+            # Use waypoint speed (prefer end waypoint, then start waypoint) or default speed
+            speed = end_wp.speed if end_wp.speed is not None else (start_wp.speed if start_wp.speed is not None else default_speed)
+            speed_source = 'end_waypoint' if end_wp.speed is not None else ('start_waypoint' if start_wp.speed is not None else 'default')
 
             if speed is None or speed <= 0:
                 raise ValueError(f'Invalid speed for segment {i}: {speed}')
@@ -80,6 +84,14 @@ class KinematicCalculator:
 
             segment = MovementSegment(
                 start_waypoint=start_wp, end_waypoint=end_wp, start_time=current_time, end_time=end_time, distance=distance, speed=speed, heading=heading
+            )
+
+            logger.info(
+                f'Segment {i}: start=({start_wp.east:.2f}, {start_wp.north:.2f}, {start_wp.up:.2f}), '
+                f'end=({end_wp.east:.2f}, {end_wp.north:.2f}, {end_wp.up:.2f}), '
+                f'distance={distance:.2f}m, speed={speed:.2f}m/s ({speed_source}), '
+                f'heading={heading:.2f}°, duration={duration:.2f}s, '
+                f'time_range=[{current_time:.2f}s, {end_time:.2f}s]'
             )
 
             segments.append(segment)
@@ -187,13 +199,24 @@ class TrajectoryGenerator:
 
     def generate_object_trajectory(self, object_config: ObjectConfig, defaults: Defaults) -> List[Position]:
         """Generate complete trajectory for an object."""
+        logger.info(
+            f'Generating trajectory for object(s) {object_config.id}: '
+            f'{len(object_config.waypoints)} waypoints, start_delay={object_config.start_delay:.2f}s, '
+            f'circular={object_config.circular}, default_speed={defaults.speed:.2f}m/s, '
+            f'time_step={defaults.time_step:.2f}s'
+        )
+
         # Calculate movement segments
         segments = self.calculator.calculate_segments(
-            waypoints=object_config.waypoints, start_delay=object_config.start_delay, time_step=defaults.time_step, circular=object_config.circular
+            waypoints=object_config.waypoints, start_delay=object_config.start_delay, time_step=defaults.time_step, default_speed=defaults.speed, circular=object_config.circular
         )
+
+        logger.info(f'Calculated {len(segments)} segment(s) for object(s) {object_config.id}')
 
         # Generate trajectory positions
         trajectory = self.calculator.generate_trajectory(segments, defaults.time_step)
+
+        logger.info(f'Generated {len(trajectory)} trajectory point(s) for object(s) {object_config.id}')
 
         return trajectory
 

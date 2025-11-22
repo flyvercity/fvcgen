@@ -1,5 +1,6 @@
 """FVC file generation logic."""
 
+import logging
 import sys
 import json
 from pathlib import Path
@@ -13,6 +14,7 @@ from .geodesy import CoordinateTransformer, CoordinateErrorGenerator
 from .kinematics import TrajectoryGenerator, Position, MovementType
 
 console = Console()
+logger = logging.getLogger(__name__)
 
 
 class FVCGenerator:
@@ -55,15 +57,19 @@ class FVCGenerator:
         # Write FVC header
         self._write_header(output)
 
+        logger.info(f'Starting FVC generation: {len(self.config.origins)} origin(s), {sum(len(origin.objects) for origin in self.config.origins)} object(s)')
+
         # Generate records for all objects first, then emit in chronological order
         all_records = []
         for origin_idx, origin in enumerate(self.config.origins):
+            logger.info(f'Processing origin {origin_idx}: {origin.name} ({len(origin.objects)} object(s))')
             for obj_idx, obj_config in enumerate(origin.objects):
                 all_records.extend(self._generate_object_records(origin_idx, obj_idx, obj_config))
 
         # Sort by time to simulate natural flow of time
         all_records.sort(key=lambda r: r['time']['unix'])
 
+        logger.info(f'Generated {len(all_records)} total record(s), writing to output')
         for record in all_records:
             output.write(json.dumps(record) + '\n')
 
@@ -84,8 +90,16 @@ class FVCGenerator:
 
     def _generate_object_records(self, origin_idx: int, obj_idx: int, obj_config: ObjectConfig) -> list[dict]:
         """Generate trajectory records for a single object."""
+        origin_name = self.config.origins[origin_idx].name
+        logger.info(f'Generating records for object(s) {obj_config.id} in origin {origin_name} (origin_idx={origin_idx}, obj_idx={obj_idx})')
+
         # Get effective defaults for this object
         defaults = self.config.get_object_defaults(origin_idx, obj_idx)
+        logger.debug(
+            f'Effective defaults for object(s) {obj_config.id}: '
+            f'speed={defaults.speed:.2f}m/s, altitude={defaults.altitude:.2f}m, '
+            f'time_step={defaults.time_step:.2f}s'
+        )
 
         # Generate trajectory
         trajectory = self.trajectory_generator.generate_object_trajectory(obj_config, defaults)
