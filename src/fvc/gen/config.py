@@ -86,6 +86,7 @@ class GeneralConfig(BaseModel):
     base_point: BasePoint = Field(..., description='Geographic base point')
     defaults: Defaults = Field(..., description='Default values')
     include_origin: bool = Field(default=False, description='Include origin index in each emitted record')
+    output_file: Optional[str] = Field(default=None, description='Output file path')
 
 
 class Waypoint(BaseModel):

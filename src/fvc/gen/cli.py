@@ -16,11 +16,7 @@ console = Console()
 def setup_logging(verbose: bool = False):
     """Configure logging based on verbosity level."""
     level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
+    logging.basicConfig(level=level, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 
 @click.group()
@@ -35,14 +31,9 @@ def main(ctx, verbose):
 
 
 @main.command()
-@click.option(
-    '--config', '-c', 'config_path',
-    required=True, help='Path to configuration file'
-)
+@click.option('--config', '-c', 'config_path', required=True, help='Path to configuration file')
 @click.option('--output', '-o', help='Output file path')
-@click.option(
-    '--stream', is_flag=True, help='Enable streaming output to stdout'
-)
+@click.option('--stream', is_flag=True, help='Enable streaming output to stdout')
 @click.pass_context
 def generate(ctx, config_path, output, stream):
     """Generate FVC scenario from configuration file."""
@@ -74,7 +65,7 @@ def generate(ctx, config_path, output, stream):
 
 
 @main.command()
-@click.option('--output', '-o', default='config_template.yaml', help='Output template file path')
+@click.option('--output', '-o', default='config-template.yaml', help='Output template file path')
 def template(output):
     """Generate a configuration file template."""
     try:
@@ -87,7 +78,9 @@ def template(output):
 
 @main.command()
 @click.option(
-    '--config', '-c', 'config_path',
+    '--config',
+    '-c',
+    'config_path',
     required=True,
     help='Path to configuration file',
 )

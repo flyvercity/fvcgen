@@ -24,6 +24,7 @@ def generate_config_template(output_path: Union[str, Path]) -> None:
                 ),
                 time_step=1.0,  # 1 second
             ),
+            output_file='scenario.fvc',
         ),
         origins=[
             OriginConfig(

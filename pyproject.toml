@@ -1,7 +1,7 @@
 [project]
 name = "fvcgen"
-version = "0.1.0"
-description = "Scenario generator for UAS ground-based traffic management systems"
+version = "0.1.1"
+description = "Scenario generator for UAS traffic management systems"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -25,8 +25,12 @@ dev = [
 [project.scripts]
 fvcgen = "fvc.gen.cli:main"
 
-[tool.uv]
-package = true
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/fvc"]
 
 [tool.ruff]
 line-length = 160
@@ -37,5 +41,11 @@ quote-style = "single"
 
 [dependency-groups]
 dev = [
+    "duct>=1.0.1",
     "pytest>=8.4.2",
 ]
+
+[[tool.uv.index]]
+name = "codeartifact"
+url = "https://flyvercity-368281077578.d.codeartifact.eu-west-3.amazonaws.com/pypi/tools/simple/"
+publish-url = "https://flyvercity-368281077578.d.codeartifact.eu-west-3.amazonaws.com/pypi/tools/"
