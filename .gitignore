@@ -12,3 +12,4 @@ wheels/
 # Results
 *.fvc
 *.yaml
+.aider*
