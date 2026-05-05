@@ -68,7 +68,7 @@ class FVCGenerator:
                 all_records.extend(self._generate_object_records(origin_idx, obj_idx, obj_config))
 
         # Sort by time to simulate natural flow of time
-        all_records.sort(key=lambda r: r['time']['unix'])
+        all_records.sort(key=lambda r: r['time'].get('rx', r['time']['unix']))
 
         logger.info(f'Generated {len(all_records)} total record(s), writing to output')
         for record in all_records:
@@ -132,6 +132,13 @@ class FVCGenerator:
                 }
                 if self.config.general.include_origin:
                     record['origin'] = self.config.origins[origin_idx].name
+                # Add transmission delay if configured
+                if defaults.transmission_delay:
+                    if defaults.transmission_delay.std_dev == 0:
+                        delay = defaults.transmission_delay.mean
+                    else:
+                        delay = np.random.normal(defaults.transmission_delay.mean, defaults.transmission_delay.std_dev)
+                    record['time']['rx'] = int(position.time * 1000) + int(round(delay))
                 records.append(record)
 
         return records
