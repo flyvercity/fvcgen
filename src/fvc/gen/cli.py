@@ -5,6 +5,7 @@ import click
 from rich.console import Console
 from rich.table import Table
 from rich.progress import Progress, SpinnerColumn, TextColumn
+from importlib.metadata import version
 
 from .config import Config
 from .generator import FVCGenerator
@@ -20,7 +21,7 @@ def setup_logging(verbose: bool = False):
 
 
 @click.group()
-@click.version_option()
+@click.version_option(version=version('fvcgen'))
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
 @click.pass_context
 def main(ctx, verbose):
