@@ -52,7 +52,7 @@ def generate_config_template(output_path: Union[str, Path]) -> None:
                             Waypoint(east=500.0, north=1500.0, up=100.0, speed=12.0),
                         ],
                     ),
-                ]
+                ],
             )
         ],
     )

@@ -50,7 +50,9 @@ class KinematicCalculator:
         """Initialize kinematic calculator."""
         self.movement_type = movement_type
 
-    def calculate_segments(self, waypoints: List[Waypoint], start_delay: float, time_step: float, default_speed: float, circular: bool = False) -> List[MovementSegment]:
+    def calculate_segments(
+        self, waypoints: List[Waypoint], start_delay: float, time_step: float, default_speed: float, circular: bool = False
+    ) -> List[MovementSegment]:
         """Calculate movement segments from waypoints."""
         if len(waypoints) < 2:
             raise ValueError('At least 2 waypoints required')
@@ -208,7 +210,11 @@ class TrajectoryGenerator:
 
         # Calculate movement segments
         segments = self.calculator.calculate_segments(
-            waypoints=object_config.waypoints, start_delay=object_config.start_delay, time_step=defaults.time_step, default_speed=defaults.speed, circular=object_config.circular
+            waypoints=object_config.waypoints,
+            start_delay=object_config.start_delay,
+            time_step=defaults.time_step,
+            default_speed=defaults.speed,
+            circular=object_config.circular,
         )
 
         logger.info(f'Calculated {len(segments)} segment(s) for object(s) {object_config.id}')

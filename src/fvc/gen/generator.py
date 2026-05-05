@@ -82,11 +82,7 @@ class FVCGenerator:
                 origin_name = Path(self.config.source_path).name
             except Exception:
                 origin_name = str(self.config.source_path)
-        metadata = {
-            'origin': origin_name or 'fvcgen_scenario.fvc',
-            'content': 'flightlog',
-            'source': 'fvcgen'
-        }
+        metadata = {'origin': origin_name or 'fvcgen_scenario.fvc', 'content': 'flightlog', 'source': 'fvcgen'}
         output.write(json.dumps(metadata) + '\n')
 
     def _generate_object_records(self, origin_idx: int, obj_idx: int, obj_config: ObjectConfig) -> list[dict]:
@@ -119,17 +115,7 @@ class FVCGenerator:
 
             # Create data line for each object ID
             for obj_id in obj_config.id:
-                record = {
-                    'time': {'unix': int(position.time * 1000)},
-                    'uaid': {'int': obj_id},
-                    'pos': {
-                        'loc': {
-                            'lat': lat,
-                            'lon': lon,
-                            'alt': alt
-                        }
-                    }
-                }
+                record = {'time': {'unix': int(position.time * 1000)}, 'uaid': {'int': obj_id}, 'pos': {'loc': {'lat': lat, 'lon': lon, 'alt': alt}}}
                 if self.config.general.include_origin:
                     record['origin'] = self.config.origins[origin_idx].name
                 # Add transmission delay if configured

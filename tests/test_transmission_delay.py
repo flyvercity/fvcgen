@@ -2,7 +2,6 @@
 
 import json
 import io
-import pytest
 from fvc.gen.config import (
     Config,
     GeneralConfig,
@@ -49,7 +48,6 @@ def test_defaults_without_transmission_delay():
         time_step=1.0,
     )
     assert defaults.transmission_delay is None
-
 
 
 def test_deep_merge_transmission_delay_override():

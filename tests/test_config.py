@@ -50,10 +50,12 @@ def test_config_creation():
                 'time_step': 1.0,
             },
         },
-        origins=[{
-            'name': 'test_origin',
-            'objects': [{'id': 'UAS-001', 'waypoints': [{'east': 0.0, 'north': 0.0, 'up': 120.0}, {'east': 1000.0, 'north': 0.0, 'up': 120.0}]}]
-        }],
+        origins=[
+            {
+                'name': 'test_origin',
+                'objects': [{'id': 'UAS-001', 'waypoints': [{'east': 0.0, 'north': 0.0, 'up': 120.0}, {'east': 1000.0, 'north': 0.0, 'up': 120.0}]}],
+            }
+        ],
     )
 
     assert config.general.base_point.lat == 55.7558
