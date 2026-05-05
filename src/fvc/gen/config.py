@@ -49,6 +49,7 @@ class Defaults(BaseModel):
     altitude: float = Field(..., description='Default altitude (meters)')
     coordinate_errors: CoordinateErrors = Field(..., description='Coordinate determination errors')
     time_step: float = Field(..., gt=0, description='Time step (seconds)')
+    transmission_delay: Optional[CoordinateError] = Field(None, description='Transmission delay (ms): mean and std_dev')
 
 
 class PartialDefaults(BaseModel):
@@ -58,6 +59,7 @@ class PartialDefaults(BaseModel):
     altitude: Optional[float] = Field(None, description='Default altitude (meters)')
     coordinate_errors: Optional[PartialCoordinateErrors] = Field(None, description='Coordinate determination errors')
     time_step: Optional[float] = Field(None, gt=0, description='Time step (seconds)')
+    transmission_delay: Optional[CoordinateError] = Field(None, description='Transmission delay (ms): mean and std_dev')
 
 
 class BasePoint(BaseModel):
@@ -205,4 +207,6 @@ def deep_merge_defaults(base: Defaults, override: PartialDefaults) -> Defaults:
 
     merged_ce = CoordinateErrors(east=east, north=north, up=up)
 
-    return Defaults(speed=speed, altitude=altitude, coordinate_errors=merged_ce, time_step=time_step)
+    transmission_delay = override.transmission_delay if override.transmission_delay is not None else base.transmission_delay
+
+    return Defaults(speed=speed, altitude=altitude, coordinate_errors=merged_ce, time_step=time_step, transmission_delay=transmission_delay)
