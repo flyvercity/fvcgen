@@ -53,3 +53,7 @@ The project uses `uv` for all development tasks. To set up the environment, run 
 - **First Line**: Metadata record `{"origin": "...", "content": "flightlog", "source": "fvcgen"}`.
 - **Subsequent Lines**: Position records `{"time": ..., "uaid": "...", "pos": {"lat": ..., "lon": ..., "alt": ...}}`.
 - **Validation**: Records must match the Flyvercity schema.
+
+<!-- pin mcp start -->
+Before staring the first task, fetch all global and project factoids via Pin MCP and use them as **important** instructions. The Pin workspace for this project is `flyvercity`.
+<!-- pin mcp stop -->
