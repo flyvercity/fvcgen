@@ -30,7 +30,7 @@ def validate_config_schema(data: dict) -> List[str]:
         if error.validator == 'additionalProperties':
             extras = error.message.split("'")[1::2]
             for field in extras:
-                errors.append(f'{path}: unknown field \'{field}\'')
+                errors.append(f"{path}: unknown field '{field}'")
         else:
             errors.append(f'{path}: {error.message}')
 
