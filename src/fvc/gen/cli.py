@@ -10,6 +10,7 @@ from importlib.metadata import version
 from .config import Config
 from .generator import FVCGenerator
 from .utils import generate_config_template
+from .schema import validate_config_schema
 
 console = Console()
 
@@ -46,6 +47,25 @@ def generate(ctx, config_path, output, stream):
         ) as progress:
             task = progress.add_task('Loading configuration...', total=None)
 
+            # Schema validation first
+            from pathlib import Path
+            import yaml as _yaml
+
+            path = Path(config_path)
+            if not path.exists():
+                console.print(f'[red]Configuration file not found: {path}[/red]')
+                raise click.Abort()
+
+            with open(path, 'r', encoding='utf-8') as f:
+                raw_data = _yaml.safe_load(f)
+
+            schema_errors = validate_config_schema(raw_data)
+            if schema_errors:
+                console.print('[red]Configuration validation failed:[/red]')
+                for err in schema_errors:
+                    console.print(f'  [yellow]•[/yellow] {err}')
+                raise click.Abort()
+
             # Load configuration
             config = Config.from_file(config_path)
             progress.update(task, description='Configuration loaded')
@@ -60,6 +80,8 @@ def generate(ctx, config_path, output, stream):
                 generator.generate(output)
                 progress.update(task, description='FVC scenario generated successfully')
 
+    except click.Abort:
+        raise
     except Exception as e:
         console.print(f'[red]Error: {e}[/red]')
         raise click.Abort()
@@ -88,6 +110,27 @@ def template(output):
 def validate(config_path):
     """Validate configuration file."""
     try:
+        # Load raw YAML for schema validation
+        from pathlib import Path
+        import yaml as _yaml
+
+        path = Path(config_path)
+        if not path.exists():
+            console.print(f'[red]Configuration file not found: {path}[/red]')
+            raise click.Abort()
+
+        with open(path, 'r', encoding='utf-8') as f:
+            raw_data = _yaml.safe_load(f)
+
+        # Schema validation (catches unknown fields and structural issues)
+        schema_errors = validate_config_schema(raw_data)
+        if schema_errors:
+            console.print('[red]Configuration validation failed:[/red]')
+            for err in schema_errors:
+                console.print(f'  [yellow]•[/yellow] {err}')
+            raise click.Abort()
+
+        # Pydantic validation (type coercion, value constraints)
         config = Config.from_file(config_path)
         console.print('[green]Configuration is valid[/green]')
 
@@ -115,6 +158,8 @@ def validate(config_path):
 
         console.print(table)
 
+    except click.Abort:
+        raise
     except Exception as e:
         console.print(f'[red]Configuration validation failed: {e}[/red]')
         raise click.Abort()
