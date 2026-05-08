@@ -91,6 +91,12 @@ origins:
 
 ## Command Line Interface (Development Environment)
 
+### Global options
+```bash
+uv run fvcgen --version          # Show version
+uv run fvcgen -v <command>       # Enable verbose/debug output
+```
+
 ### Generate FVC scenario
 ```bash
 uv run fvcgen generate -c config.yaml -o output.fvc
