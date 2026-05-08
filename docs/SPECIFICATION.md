@@ -15,10 +15,12 @@ The general section should contain:
   - Mean and standard deviation of coordinate determination errors (along three axes of the trajectory coordinate system, oriented along the tangent to the trajectory, then recalculate them to ENU)
   - Time step for coordinate updates (seconds)
 - Path and name of the output file (optional)
+- Whether to include origin name in each output record (`include_origin`, optional, default false)
 
 ### Objects Settings Section
 The objects settings section should contain:
 - List of origins, each including:
+  - Origin name (required, unique identifier for the origin)
   - Default values similar to those mentioned above, but applicable within this origin
   - List of objects, each including:
     - Object identifier(s)
