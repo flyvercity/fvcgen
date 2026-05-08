@@ -1,6 +1,6 @@
 # Flyvercity Flight Scenario Generator
 
-A tool for generating flight scenarios for UAS (Unmanned Aircraft Systems) ground-based traffic management systems. The tool uses Flyvercity Common Format (`fvc`).
+A tool for generating flight scenarios for UAS (Unmanned Aircraft Systems) ground-based traffic management systems. The tool uses [Flyvercity Common Format](https://github.com/flyvercity/fvctools/tree/main/docs/schema) (`fvc`).
 
 ## Features
 
@@ -13,17 +13,11 @@ A tool for generating flight scenarios for UAS (Unmanned Aircraft Systems) groun
 
 ## Installation
 
-### From CodeArtifact (recommended)
+### From GitHUb
 
-1. Authenticate with CodeArtifact:
-   ```powershell
-   . .\scripts\Login-ToCodeArtifact.ps1
-   ```
-
-2. Install as a tool:
-   ```bash
-   uv run scripts/install_fvcgen.py
-   ```
+```bash
+uv tool install git+https://github.com/flyvercity/fvcgen
+```
 
 ### From source
 
@@ -172,3 +166,16 @@ uv run build
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for release history.
+
+
+## From CodeArtifact via PowerShell (Internal)
+
+1. Authenticate with CodeArtifact:
+   ```powershell
+   . .\scripts\Login-ToCodeArtifact.ps1
+   ```
+
+2. Install as a tool:
+   ```bash
+   uv run scripts/install_fvcgen.py
+   ```
