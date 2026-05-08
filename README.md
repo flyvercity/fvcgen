@@ -51,10 +51,15 @@ general:
       north: {mean: 0.0, std_dev: 2.0}
       up: {mean: 0.0, std_dev: 3.0}
     time_step: 1.0  # Time step (seconds)
+    transmission_delay:  # Optional: simulated transmission delay (ms)
+      mean: 2.0
+      std_dev: 0.5
+  include_origin: false  # Include origin name in output records
   output_file: "scenario.fvc"  # Output file path
 
 origins:
-  - objects:
+  - name: "origin-1"  # Required origin name
+    objects:
       - id: "UAS-001"
         start_delay: 0.0
         waypoints:
