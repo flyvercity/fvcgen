@@ -51,6 +51,9 @@ Provide the ability to generate a configuration file template in command line pa
 ### 7. Streaming Output (Optional)
 Make streaming data output for transmission to fusion.
 
+### 8. Transmission Delay Simulation (Optional)
+Simulate transmission delay for each position record. Configuration provides mean and standard deviation (in milliseconds). For each record, a normally distributed delay is generated and added to the simulation timestamp to produce a reception time (`rx`). When enabled, output records are sorted by reception time.
+
 ## Output Format
 
 * The output file should be in Flyvercity Common Format (`fvc`), based on jsonlines format.
