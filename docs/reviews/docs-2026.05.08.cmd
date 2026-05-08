@@ -2,7 +2,7 @@
 
 ## High Priority
 
-[ ] README.md: Fix linter reference (flake8 → ruff)
+[x] README.md: Fix linter reference (flake8 → ruff)
 [ ] README.md: Update config YAML example to include `name` on origins, `transmission_delay`, `include_origin`
 [ ] README.md + SPECIFICATION.md: Document actual output record structure (nested `time.unix`/`time.rx`, `uaid.int`, `pos.loc`)
 [ ] SPECIFICATION.md: Add `transmission_delay` feature (mean/std_dev delay, `rx` field in output, sorting by rx)

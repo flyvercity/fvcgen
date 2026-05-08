@@ -89,8 +89,7 @@ uv run fvcgen generate -c config.yaml --stream
 ## Development
 
 ### Code Style
-- Uses `ruff` for formatting
-- Uses `flake8` for linting
+- Uses `ruff` for formatting and linting
 - Maximum line length: 160 characters
 - Follows Python 3.13+ standards
 
