@@ -11,6 +11,26 @@ A tool for generating flight scenarios for UAS (Unmanned Aircraft Systems) groun
 - **Coordinate errors**: Configurable statistical errors for realistic simulation
 - **Circular routes**: Support for closed-loop flight paths
 
+## Installation
+
+### From CodeArtifact (recommended)
+
+1. Authenticate with CodeArtifact:
+   ```powershell
+   . .\scripts\Login-ToCodeArtifact.ps1
+   ```
+
+2. Install as a tool:
+   ```bash
+   uv run scripts/install_fvcgen.py
+   ```
+
+### From source
+
+```bash
+uv sync
+```
+
 ## Quick Start
 
 1. **Generate a configuration template**:
