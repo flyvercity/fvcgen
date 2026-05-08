@@ -168,3 +168,7 @@ uv run build
 - **Geodesy**: pygeodesy for accurate coordinate transformations
 - **Kinematics**: Custom kinematic equations for object movement
 - **Generation**: FVC file format generation with error simulation
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.

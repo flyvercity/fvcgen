@@ -18,6 +18,6 @@
 
 ## Low Priority
 
-[ ] README.md: Add link to CHANGELOG
+[x] README.md: Add link to CHANGELOG
 [ ] docs/IMPLEMENTATION_SUMMARY.md: Remove (stale, duplicates README, shows old output format)
 [ ] SPECIFICATION.md: Note simplified error propagation vs. spec's tangent-frame approach
