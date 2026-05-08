@@ -41,6 +41,8 @@ Make smooth changes in trajectory and speed when passing through waypoints.
 ### 3. Coordinate Uncertainty
 Object coordinates should be determined as a normally distributed unbiased random variable with given distribution parameters (mathematical expectation and standard deviation - specified in settings).
 
+> **Implementation note:** The current implementation applies errors directly in geographic space using a simplified meters-to-degrees conversion, rather than the tangent-frame approach described in the General Section. Proper error propagation from the trajectory coordinate system to ENU is a future enhancement.
+
 ### 4. Circular Routes (Optional)
 Add the ability to fly along a circular route, where the last waypoint from the list is connected to the first (need to add a setting).
 
