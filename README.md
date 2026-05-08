@@ -10,7 +10,6 @@ A tool for generating flight scenarios for UAS (Unmanned Aircraft Systems) groun
 - **Multiple objects**: Support for multiple origins and objects per scenario
 - **Coordinate errors**: Configurable statistical errors for realistic simulation
 - **Circular routes**: Support for closed-loop flight paths
-- **Rich CLI**: Beautiful command-line interface with progress bars and colored output
 
 ## Quick Start
 
