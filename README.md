@@ -91,6 +91,25 @@ uv run fvcgen validate -c config.yaml
 uv run fvcgen generate -c config.yaml --stream
 ```
 
+## Output Format
+
+The output file uses JSON Lines format (`.fvc`). The first line is a metadata record, followed by position records:
+
+```jsonl
+{"origin": "config.yaml", "content": "flightlog", "source": "fvcgen"}
+{"time": {"unix": 0}, "uaid": {"int": "UAS-001"}, "pos": {"loc": {"lat": 55.7558, "lon": 37.6176, "alt": 270.0}}}
+{"time": {"unix": 1000, "rx": 1002}, "uaid": {"int": "UAS-001"}, "pos": {"loc": {"lat": 55.7559, "lon": 37.6180, "alt": 270.1}}}
+```
+
+Record fields:
+- `time.unix` — simulation timestamp (milliseconds)
+- `time.rx` — simulated reception time (milliseconds), present when `transmission_delay` is configured
+- `uaid.int` — object identifier
+- `pos.loc` — geographic position (`lat`, `lon`, `alt`)
+- `origin` — origin name (present when `include_origin: true`)
+
+Records are sorted by `rx` time when transmission delay is enabled.
+
 ## Development
 
 ### Code Style

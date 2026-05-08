@@ -54,12 +54,17 @@ Make streaming data output for transmission to fusion.
 ## Output Format
 
 * The output file should be in Flyvercity Common Format (`fvc`), based on jsonlines format.
-* The first string should be the metadata record: `{"origin": "example.csv", "content": "flightlog", "source": "fvcgen"}`
+* The first string should be the metadata record: `{"origin": "example.yaml", "content": "flightlog", "source": "fvcgen"}`
 * For each simulation step, and for each object, a new record should be added to the file.
-* The record should contain the following fields:
-  * time
-  * uaid
-  * pos
+* The record should contain the following nested fields:
+  * `time.unix` — simulation timestamp in milliseconds
+  * `time.rx` — simulated reception timestamp in milliseconds (present when `transmission_delay` is configured)
+  * `uaid.int` — object identifier string
+  * `pos.loc.lat` — latitude (degrees)
+  * `pos.loc.lon` — longitude (degrees)
+  * `pos.loc.alt` — altitude (meters)
+  * `origin` — origin name (present when `include_origin` is enabled)
+* When `transmission_delay` is configured, records should be sorted by `rx` time.
 * Each record shall match the schema specified here: https://github.com/flyvercity/fvctools/blob/main/src/fvc/tools/df/schema.yaml
 
 ## Technical Implementation Notes
