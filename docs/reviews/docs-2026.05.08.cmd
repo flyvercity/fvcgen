@@ -11,7 +11,7 @@
 
 [x] README.md: Add Installation section (CodeArtifact + pip install)
 [x] README.md: Document `--verbose` and `--version` CLI flags
-[ ] README.md: Document hierarchical defaults merge (general → origin → object)
+[x] README.md: Document hierarchical defaults merge (general → origin → object)
 [ ] README.md: Document multiple IDs per object (`id` accepts string or list)
 [ ] SPECIFICATION.md: Mark "Smooth Transitions" (§2) as not yet implemented
 [ ] SPECIFICATION.md: Add `include_origin` option and `name` field on origins

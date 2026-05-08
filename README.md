@@ -89,6 +89,10 @@ origins:
         circular: true
 ```
 
+### Hierarchical Defaults
+
+Defaults are resolved in order: **general → origin → object**. Each level can partially override fields from the level above. For example, an object can override only `speed` while inheriting all other defaults from its origin or the general section.
+
 ## Command Line Interface (Development Environment)
 
 ### Global options
