@@ -33,7 +33,7 @@ The objects settings section should contain:
 ### 1. Kinematic Calculations
 Object coordinates should be calculated in accordance with the kinematic equations of motion of a material point.
 
-### 2. Smooth Transitions (Optional)
+### 2. Smooth Transitions (Optional, not yet implemented)
 Make smooth changes in trajectory and speed when passing through waypoints.
 
 ### 3. Coordinate Uncertainty
